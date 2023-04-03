@@ -1,109 +1,67 @@
 package DAO;
 
 import Application.Employee;
+import Application.HibernateSessionFactoryUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class EmployeeDAOImplementation implements EmployeeDAO {
     @Override
-    public void createEmployee() {
-        String query = "INSERT INTO employee (first_name, last_name, gender, age, city_id) VALUES ('Anastasia', 'Corneva', 'female', 30, 2)";
-        try(Connection connection = getConnection()) {
-            Statement statement = connection.createStatement();
-            statement.execute(query);
+    public void addEmployee(Employee employee) {
 
-        } catch (SQLException sqlException){
-            sqlException.printStackTrace();
+        try(Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.save(employee);
+            transaction.commit();
+
         }
-
     }
 
     @Override
     public Optional<Employee> getEmployeeById(int id) {
-        String query = "SELECT * FROM employee  WHERE id = ?";
 
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
 
-            String first_name = resultSet.getString(2);
-            String last_name = resultSet.getString(3);
-            String gender = resultSet.getString(4);
-            Integer age = resultSet.getInt(5);
-            int city_id = resultSet.getInt(6);
+        try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession())  {
+            return Optional.ofNullable(session.get(Employee.class, id));
 
-            Employee Employee = new Employee(id, first_name, last_name, gender, age, city_id);
-            return Optional.ofNullable(Employee);
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-            return Optional.empty();
+
         }
     }
 
     @Override
     public List<Employee> getAllEmployees() {
-        List<Employee> employeeList = new ArrayList<>();
-        String query = "SELECT * FROM employee";
-        try(Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
-                int id = resultSet.getInt("id");
-                String first_name = resultSet.getString("first_name");
-                String last_name = resultSet.getString("last_name");
-                String gender = resultSet.getString("gender");
-                Integer age = resultSet.getInt("age");
-                int city_id = resultSet.getInt("city_id");
-                employeeList.add(new Employee(id, first_name, last_name, gender, age, city_id));
+        try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()){
+            return session.createQuery("from Employee ").list();
 
-
-            }
-
-        }catch (SQLException sqlException){
-            sqlException.printStackTrace();
         }
-        return employeeList;
     }
 
     @Override
-    public void updateEmployee(int id) {
-        String query = "UPDATE employee SET first_name = 'Polina' WHERE id = ? ";
-        try(Connection connection = getConnection()){
+    public void updateEmployee(Employee employee, int id) {
 
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, id);
-            statement.executeUpdate();
+        try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()){
+            Transaction transaction = session.beginTransaction();
+            employee.setId(id);
+            session.update(employee);
+            transaction.commit();
 
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
         }
 
     }
 
     @Override
-    public void deleteEmployeeById(int id) {
-        String query = "DELETE FROM employee WHERE id = ?";
-        try(Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, id);
-            statement.executeUpdate();
+    public void deleteEmployee(Employee employee){
 
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+        try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()){
+
+            Transaction transaction = session.beginTransaction();
+            session.delete(employee);
+            transaction.commit();
+
         }
-
     }
 
-    public static Connection getConnection() throws SQLException {
-        final String user = "postgres";
-        final String password = "Cjdtncrfz159753";
-        final String url = "jdbc:postgresql://localhost:5432/skypro";
-
-        return DriverManager.getConnection(url, user, password);
-    }
 }
