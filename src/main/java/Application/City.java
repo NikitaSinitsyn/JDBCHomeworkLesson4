@@ -9,6 +9,7 @@ public class City {
         this.city_name = city_name;
     }
 
+
     public int getCity_id() {
         return city_id;
     }
