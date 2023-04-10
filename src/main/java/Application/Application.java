@@ -1,21 +1,49 @@
 package Application;
 
+import DAO.CityDAO;
+import DAO.CityDAOImplementation;
 import DAO.EmployeeDAO;
 import DAO.EmployeeDAOImplementation;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Application {
     public static void main(String[] args) throws SQLException {
-
+        CityDAO cityDao = new CityDAOImplementation();
         EmployeeDAO employeeDAO = new EmployeeDAOImplementation();
 
-        Employee newEmployee = new Employee(13,"Bianka", "Trifonova", "female", 32, 1);
-        Employee testEmployee = new Employee("Anna", "Zahorodnuk", "female", 30, 1);
-        System.out.println(testEmployee);
 
-        //employeeDAO.addEmployee(testEmployee);
+
+
+        City newCity = City.builder().employeeList(List.of())
+                .city_name("Санкт Петербург")
+                .build();
+        cityDao.addCity(newCity);
+
+        Employee employee1 = Employee.builder()
+                .first_name("Иво")
+                .last_name("Кусев")
+                .gender("male")
+                .age(23)
+                .city(newCity)
+                .build();
+        Employee employee2 = Employee.builder()
+                .first_name("Симона")
+                .last_name("Кацарска")
+                .gender("female")
+                .age(21)
+                .city(newCity)
+                .build();
+
+        newCity.setEmployeeList(List.of(employee1, employee2));
+
+
+
+
+
+        /*employeeDAO.addEmployee(testEmployee);
 
         Employee employee = employeeDAO.getEmployeeById(13).get();
         System.out.println(employee);
@@ -32,7 +60,9 @@ public class Application {
         System.out.println(testEmployee);
         employeeDAO.updateEmployee(testEmployee, 14);
         System.out.println(testEmployee);
-        employeeDAO.deleteEmployee(newEmployee);
+        employeeDAO.deleteEmployee(newEmployee);*/
+
+
 
 
     }
