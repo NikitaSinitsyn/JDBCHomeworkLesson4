@@ -12,7 +12,7 @@ public interface CityDAO {
 
      List<City> getAllCities();
 
-     void updateCity(City city);
+     City updateCity(City city);
 
      void deleteCity(City city);
 }

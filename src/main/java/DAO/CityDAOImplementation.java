@@ -40,18 +40,15 @@ public class CityDAOImplementation implements CityDAO {
     }
 
     @Override
-    public void updateCity(City city) {
-        Transaction transaction = null;
+    public City updateCity(City city) {
+        City updated;
+
         try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()){
-            transaction = session.beginTransaction();
-            session.update(city);
+             Transaction transaction = session.beginTransaction();
+            updated = (City) session.merge(city);
             transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
         }
+        return updated;
 
     }
 

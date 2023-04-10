@@ -4,13 +4,11 @@ import DAO.CityDAO;
 import DAO.CityDAOImplementation;
 import DAO.EmployeeDAO;
 import DAO.EmployeeDAOImplementation;
-
-import java.sql.*;
-import java.util.ArrayList;
+import com.sun.source.tree.AssertTree;
 import java.util.List;
 
 public class Application {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args)  {
         CityDAO cityDao = new CityDAOImplementation();
         EmployeeDAO employeeDAO = new EmployeeDAOImplementation();
 
@@ -21,6 +19,7 @@ public class Application {
                 .city_name("Санкт Петербург")
                 .build();
         cityDao.addCity(newCity);
+
 
         Employee employee1 = Employee.builder()
                 .first_name("Иво")
@@ -38,6 +37,8 @@ public class Application {
                 .build();
 
         newCity.setEmployeeList(List.of(employee1, employee2));
+        City updatedCity = cityDao.updateCity(newCity);
+
 
 
 
